@@ -6,11 +6,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Student;
+use App\Models\University;
+
+use Illuminate\Validation\ValidationException;
 
 
 class StudentController extends Controller
 {
     //
+    public function index()
+    {
+        return Student::with('user', 'university', 'department')->get();
+    }
+
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -20,6 +28,17 @@ class StudentController extends Controller
             'university_id' => 'required|exists:universities,id',
             'department_id' => 'required|exists:departments,id',
         ]);
+
+        $emailDomain = substr(strrchr($validated['email'], "@"), 1);
+
+        $university = University::find($validated['university_id']);
+
+         if ($university->domain && strtolower($emailDomain) !== strtolower($university->domain)) {
+            throw ValidationException::withMessages([
+                'email' => 'The email domain does not match the selected university.',
+            ]);
+        }
+
 
         $user = User::create([
             'name'     => $validated['name'],
