@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-3xl mx-auto p-4 space-y-6">
+  <div class="min-w-3xl mx-auto p-4 space-y-6">
     <VSelectWrapper
       v-model="selectedUniversity"
       :options="sortedUniversities"
@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import api from '../services/api'
 import VSelectWrapper from './VSelectWrapper.vue'
 
@@ -69,7 +69,7 @@ const selectedCourse = ref<Course | undefined>()
 
 
 
-// const router = useRouter()
+const router = useRouter()
 
 const sortedUniversities = computed(() =>
   [...universities.value].sort((a, b) => a.name.localeCompare(b.name))
@@ -98,11 +98,7 @@ onMounted(fetchUniversities)
 
 const goToCourse = async () => {
   if (selectedCourse.value) {
-    const { data } = await api.get(`/reviews`, {
-      params: { course_id: selectedCourse.value.id }
-    })
-    console.log('Reviews:', data)
-    // optionally: display or store review data
+    router.push({ name: 'CourseReviews', params: { id: selectedCourse.value.id } })
   }
 }
 </script>

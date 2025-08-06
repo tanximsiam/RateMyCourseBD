@@ -9,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+import 'vue-select/dist/vue-select.css'
 import { computed, defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
@@ -29,3 +30,6 @@ const selected = computed({
   }
 })
 </script>
+
+
+

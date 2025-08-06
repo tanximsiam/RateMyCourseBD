@@ -11,6 +11,21 @@ use App\Models\Course;
 class ReviewController extends Controller
 {
     //
+    public function courseDetailsWithReviews($id)
+    {
+        $course = Course::with(['department', 'university'])->findOrFail($id);
+        $reviews = Review::with('user')
+                ->where('course_id', $id)
+                ->orderByDesc('created_at')
+                ->get();
+
+        return response()->json([
+            'course' => $course,
+            'reviews' => $reviews
+        ]);
+    }
+
+
     public function index(Request $request)
     {
         $request->validate([
