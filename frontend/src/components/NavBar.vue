@@ -1,23 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useAuthStore } from '../stores/authStore'
 
 const emit = defineEmits(['open-login'])
 
-const user = ref<{ name: string } | null>(null)
+const auth = useAuthStore()
+onMounted(() => auth.loadFromStorage())
 
-onMounted(() => {
-  const userData = localStorage.getItem('user')
-  if (userData) {
-    user.value = JSON.parse(userData)
-  }
-})
-
-const isLoggedIn = computed(() => !!user.value)
+const isLoggedIn = computed(() => !!auth.user)
 
 const logout = () => {
-  localStorage.removeItem('auth_token')
-  localStorage.removeItem('user')
-  location.reload() // reload to reflect logout
+  auth.logout()
+  location.reload() // optional: reload or use router to reset state
 }
 </script>
 
@@ -43,7 +37,7 @@ const logout = () => {
           alt="avatar"
           class="w-8 h-8 rounded-full border"
         />
-        <span class="font-medium text-gray-700">{{ user?.name }}</span>
+        <span class="font-medium text-gray-700">{{ auth.user?.name }}</span>
         <button @click="logout" class="text-sm text-red-500 hover:underline">Logout</button>
       </div>
     </div>

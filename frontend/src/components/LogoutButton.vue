@@ -15,7 +15,7 @@ const handleLogout = async () => {
   localStorage.removeItem('auth_token')
   localStorage.removeItem('user')
 
-  router.push('/') // redirect after logout
+  router.push('/')
 }
 </script>
 
