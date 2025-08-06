@@ -4,14 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Review;
+use App\Models\Student;
+use App\Models\Course;
 
 
 class ReviewController extends Controller
 {
     //
+    public function index(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
+        ]);
+
+        $reviews = Review::where('course_id', $request->course_id)->get();
+
+        return response()->json($reviews);
+    }
+
+
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'course_id'     => 'required|exists:courses,id',
             'rating'        => 'required|integer|min:1|max:5',
             'review_text'   => 'nullable|string',
@@ -20,7 +34,28 @@ class ReviewController extends Controller
             'is_anonymous'  => 'boolean',
         ]);
 
-        $data['user_id'] = $request->user()->id;
+        $user = $request->user();
+
+        if ($user->role !== 'student') {
+            return response()->json(['message' => 'Only students can submit reviews'], 403);
+        }
+
+        $student = Student::where('user_id', $user->id)->first();
+
+        if (!$student) {
+            return response()->json(['message' => 'Student profile not found'], 403);
+        }
+
+        $course = Course::findOrFail($request->course_id);
+
+        if (
+            $student->university_id !== $course->university_id
+        ) {
+            return response()->json(['message' => 'You are not allowed to review this course'], 403);
+        }
+
+        $data = $request->only(['course_id', 'rating', 'review_text', 'tags', 'is_anonymous']);
+        $data['user_id'] = $user->id;
 
         $review = Review::create($data);
 

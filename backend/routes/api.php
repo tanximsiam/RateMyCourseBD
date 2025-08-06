@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ReviewController;
 
 
 Route::get('/users', [UserController::class, 'index']); // for API testing
@@ -15,6 +16,7 @@ Route::get('/students', [StudentController::class, 'index']); // for API testing
 Route::get('/departments', [DepartmentController::class, 'index']); // for API testing
 Route::get('/universities', [UniversityController::class, 'index']); // for API testing
 Route::get('/courses', [CourseController::class, 'index']); // for API testing
+Route::get('/reviews', [ReviewController::class, 'index']); // for API testing
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [StudentController::class, 'register']);
