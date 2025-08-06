@@ -1,11 +1,29 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import NavBar from './components/NavBar.vue';
+import { ref } from 'vue'
+import Navbar from './components/NavBar.vue'
+import LoginModal from './components/LoginModal.vue'
+import { useAuthStore } from './stores/authStore'
+import type { User } from './stores/authStore'
+
+const showLogin = ref(false)
+const auth = useAuthStore()
+
+const handleLoginSuccess = (userData: User) => {
+  const token = localStorage.getItem('auth_token')!
+  auth.setAuth(userData, token)
+  showLogin.value = false
+}
 </script>
 
 <template>
   <div class="bg-slate-50 min-h-screen flex flex-col gap-6">
-    <NavBar />
+    <Navbar @open-login="showLogin = true" />
+    <LoginModal
+      v-if="showLogin"
+      :show="showLogin"
+      @close="showLogin = false"
+      @success="handleLoginSuccess"
+    />
     <div class="max-w-[1920px] justify-center mx-auto">
       <RouterView />
     </div>
