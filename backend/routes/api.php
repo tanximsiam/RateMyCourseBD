@@ -10,6 +10,7 @@ use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewVoteController;
+use App\Http\Controllers\CourseOutlineController;
 
 
 Route::get('/users', [UserController::class, 'index']); // for API testing
@@ -21,6 +22,8 @@ Route::get('/reviews', [ReviewController::class, 'index']); // for API testing
 
 
 Route::get('/courses/{id}/reviews/details', [ReviewController::class, 'courseReviews']);
+
+Route::get('/courses/{id}/outlines', [CourseOutlineController::class, 'index']);
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -44,4 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Review Vote
     Route::post('/vote', [ReviewVoteController::class, 'store']);
+
+    // Course Outline
+    Route::post('/courses/{id}/outline', [CourseOutlineController::class, 'store']);
 });
