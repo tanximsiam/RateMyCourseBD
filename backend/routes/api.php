@@ -12,6 +12,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewVoteController;
 use App\Http\Controllers\CourseOutlineController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CourseSuggestionController;
 
 
 Route::get('/users', [UserController::class, 'index']); // for API testing
@@ -55,4 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Comments
     Route::post('/reviews/{review}/comments', [CommentController::class, 'store']);
+
+    // Suggestions
+    Route::post('/suggestions', [CourseSuggestionController::class, 'store']);
 });
