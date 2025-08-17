@@ -14,10 +14,21 @@ class ReviewController extends Controller
     public function courseReviews($id)
     {
         $course = Course::with(['department', 'university'])->findOrFail($id);
-        $reviews = Review::with('user')
-                ->where('course_id', $id)
-                ->orderByDesc('created_at')
-                ->get();
+
+        $user = request()->user();
+        $userId = $user ? $user->id : null;
+
+        $reviews = Review::with(['user', 'votes'])
+            ->where('course_id', $id)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($review) use ($userId) {
+                $review->my_vote = optional(
+                    $review->votes->firstWhere('user_id', $userId)
+                )?->vote;
+
+                return $review->makeHidden('votes');
+            });
 
         return response()->json([
             'course' => $course,

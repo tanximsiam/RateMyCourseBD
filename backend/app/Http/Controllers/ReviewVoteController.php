@@ -17,7 +17,7 @@ class ReviewVoteController extends Controller
             'vote' => 'required|in:1,-1',
         ]);
 
-        $userId = $request->user()->id();
+        $userId = $request->user()->id;
         $reviewId = $request->review_id;
         $voteValue = $request->vote;
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ReviewVoteController;
 
 
 Route::get('/users', [UserController::class, 'index']); // for API testing
@@ -40,4 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Review
     Route::post('/submit-review', [ReviewController::class, 'store']);
+
+    // Review Vote
+    Route::post('/vote', [ReviewVoteController::class, 'store']);
 });
