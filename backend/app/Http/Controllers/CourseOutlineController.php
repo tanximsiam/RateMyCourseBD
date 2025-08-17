@@ -31,7 +31,7 @@ class CourseOutlineController extends Controller
             'course_id' => $courseId,
             'user_id' => $request->user()->id,
             'file_path' => $path,
-            'approved' => false, // default for moderation
+            'approved' => true,
         ]);
 
         return response()->json([
