@@ -11,6 +11,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewVoteController;
 use App\Http\Controllers\CourseOutlineController;
+use App\Http\Controllers\CommentController;
 
 
 Route::get('/users', [UserController::class, 'index']); // for API testing
@@ -25,6 +26,7 @@ Route::get('/courses/{id}/reviews/details', [ReviewController::class, 'courseRev
 
 Route::get('/courses/{id}/outlines', [CourseOutlineController::class, 'index']);
 
+Route::get('/reviews/{review}/comments', [CommentController::class, 'index']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [StudentController::class, 'register']);
@@ -50,4 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Course Outline
     Route::post('/courses/{id}/outline', [CourseOutlineController::class, 'store']);
+
+    // Comments
+    Route::post('/reviews/{review}/comments', [CommentController::class, 'store']);
 });
