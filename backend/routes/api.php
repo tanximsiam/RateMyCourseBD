@@ -17,7 +17,9 @@ Route::get('/departments', [DepartmentController::class, 'index']); // for API t
 Route::get('/universities', [UniversityController::class, 'index']); // for API testing
 Route::get('/courses', [CourseController::class, 'index']); // for API testing
 Route::get('/reviews', [ReviewController::class, 'index']); // for API testing
-Route::get('/courses/{id}/reviews/details', [ReviewController::class, 'courseDetailsWithReviews']);
+
+
+Route::get('/courses/{id}/reviews/details', [ReviewController::class, 'courseReviews']);
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -27,7 +29,6 @@ Route::post('/register', [StudentController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::middleware('auth:sanctum')->post('/reviews', [ReviewController::class, 'store']);
 
     // Student
     Route::get('/me', [StudentController::class, 'me']);
@@ -36,4 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // User
     Route::put('/users/change-password', [UserController::class, 'changePassword']);
+
+    // Review
+    Route::post('/submit-review', [ReviewController::class, 'store']);
 });

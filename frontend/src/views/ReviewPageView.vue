@@ -9,6 +9,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import PostReviewBox from '@/components/PostReviewBox.vue';
-import ReviewCardBox from '../components/ReviewCardBox.vue'
+import ReviewCardBox from '@/components/ReviewCardBox.vue'
 const reloadFlag = ref(0)
 </script>

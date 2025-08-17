@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import api from '../services/api'
+import api from '@/services/api'
 import ReviewCard from './ReviewCard.vue'
 
 const props = defineProps<{ reload: number }>() // ✅ Watch trigger from parent
