@@ -32,15 +32,28 @@
         :is-logged-in="!!auth.token"
         @changed="onVoteChanged"
       />
+      <CommentToggleButton :open="showComments" @toggle="toggleComments" />
+    </div>
+    <div v-if="showComments" class="w-full space-y-4">
+      <CommentBox :review-id="review.id" @submitted="refreshAfterSubmit" />
+      <div v-if="loadingComments" class="text-sm text-gray-500">Loading comments…</div>
+      <CommentCards v-else :comments="comments" />
     </div>
 
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import api from '@/services/api'
+import { useAuthStore } from '@/stores/authStore'
+
 import TagChips from './TagChips.vue'
 import VoteBox from './VoteBox.vue'
-import { useAuthStore } from '@/stores/authStore'
+import CommentToggleButton from './CommentToggleButton.vue'
+import CommentBox from './CommentBox.vue'
+import CommentCards from './CommentCards.vue'
+
 
 const auth = useAuthStore()
 
@@ -58,10 +71,44 @@ const emit = defineEmits<{
 function onVoteChanged(p: { myVote: 1 | -1 | null; upvotes: number; downvotes: number }) {
   emit('update', {
   id: props.review.id,
-  my_vote: p.myVote, // 👈 rename here
+  my_vote: p.myVote,
   upvotes: p.upvotes,
   downvotes: p.downvotes
 })
+}
+
+type Comment = {
+  id: number
+  user_id: number
+  review_id: number
+  content: string
+  created_at: string
+  user?: { id: number; name: string }
+}
+
+const showComments = ref(false)
+const loadingComments = ref(false)
+const comments = ref<Comment[]>([])
+
+async function loadComments() {
+  loadingComments.value = true
+  try {
+    const { data } = await api.get(`/reviews/${props.review.id}/comments`)
+    comments.value = data
+  } finally {
+    loadingComments.value = false
+  }
+}
+
+async function toggleComments() {
+  showComments.value = !showComments.value
+  if (showComments.value && comments.value.length === 0) {
+    await loadComments()
+  }
+}
+
+async function refreshAfterSubmit() {
+  await loadComments()
 }
 
 </script>
