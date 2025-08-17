@@ -16,6 +16,7 @@
         v-for="review in reviews"
         :key="review.id"
         :review="review"
+        @update="onReviewUpdate"
       />
 
       <div v-if="reviews.length === 0" class="text-gray-500">No reviews yet.</div>
@@ -26,7 +27,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import api from '../services/api'
+import api from '@/services/api'
 import ReviewCard from './ReviewCard.vue'
 
 const props = defineProps<{ reload: number }>() // ✅ Watch trigger from parent
@@ -47,6 +48,9 @@ type Review = {
   is_anonymous: boolean
   user: ReviewUser
   created_at: string
+  upvotes: number
+  downvotes: number
+  my_vote: 1 | -1 | null
 }
 
 type Department = {
@@ -99,6 +103,15 @@ const fetchReviews = async () => {
     }
   } finally {
     loading.value = false
+  }
+}
+
+function onReviewUpdate(p: { id: number; my_vote: 1 | -1 | null; upvotes: number; downvotes: number }) {
+  const review = reviews.value.find(r => r.id === p.id)
+  if (review) {
+    review.my_vote = p.my_vote
+    review.upvotes = p.upvotes
+    review.downvotes = p.downvotes
   }
 }
 

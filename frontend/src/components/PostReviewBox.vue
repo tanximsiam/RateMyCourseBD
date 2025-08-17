@@ -20,7 +20,7 @@ const isAnonymous = ref(false)
 
 const submitReview = async () => {
   try {
-    await api.post('/reviews', {
+    await api.post('/submit-review', {
       course_id: courseId,
       rating: rating.value,
       review_text: reviewText.value,

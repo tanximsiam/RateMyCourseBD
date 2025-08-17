@@ -11,13 +11,24 @@ use App\Models\Course;
 class ReviewController extends Controller
 {
     //
-    public function courseDetailsWithReviews($id)
+    public function courseReviews($id)
     {
         $course = Course::with(['department', 'university'])->findOrFail($id);
-        $reviews = Review::with('user')
-                ->where('course_id', $id)
-                ->orderByDesc('created_at')
-                ->get();
+
+        $user = request()->user();
+        $userId = $user ? $user->id : null;
+
+        $reviews = Review::with(['user', 'votes'])
+            ->where('course_id', $id)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($review) use ($userId) {
+                $review->my_vote = optional(
+                    $review->votes->firstWhere('user_id', $userId)
+                )?->vote;
+
+                return $review->makeHidden('votes');
+            });
 
         return response()->json([
             'course' => $course,
@@ -76,22 +87,6 @@ class ReviewController extends Controller
 
         return response()->json(['message' => 'Review submitted', 'review' => $review], 201);
     }
-
-    public function vote(Request $request, Review $review)
-    {
-        $request->validate([
-            'type' => 'required|in:up,down',
-        ]);
-
-        if ($request->type === 'up') {
-            $review->increment('upvotes');
-        } else {
-            $review->increment('downvotes');
-        }
-
-        return response()->json(['message' => 'Vote recorded']);
-    }
-
     public function getVotes(Review $review)
     {
         return response()->json([

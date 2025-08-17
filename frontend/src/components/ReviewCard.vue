@@ -23,15 +23,45 @@
         Accusamus, veritatis porro. Totam commodi vero voluptatibus nobis repudiandae animi vel quos, possimus libero earum natus labore at architecto sint magni tenetur reprehenderit ea excepturi ullam quam. Doloremque, rem nobis.
     </div>
 
+    <div class="flex items-center gap-6 text-gray-600">
+      <VoteBox
+        :review-id="review.id"
+        :my-vote="review.my_vote ?? null"
+        :upvotes="review.upvotes ?? 0"
+        :downvotes="review.downvotes ?? 0"
+        :is-logged-in="!!auth.token"
+        @changed="onVoteChanged"
+      />
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import TagChips from './TagChips.vue'
-defineProps({
+import VoteBox from './VoteBox.vue'
+import { useAuthStore } from '@/stores/authStore'
+
+const auth = useAuthStore()
+
+const props = defineProps({
   review: {
     type: Object,
     required: true
   }
 })
+
+const emit = defineEmits<{
+  (e: 'update', payload: { id: number; my_vote: 1 | -1 | null; upvotes: number; downvotes: number }): void
+}>()
+
+function onVoteChanged(p: { myVote: 1 | -1 | null; upvotes: number; downvotes: number }) {
+  emit('update', {
+  id: props.review.id,
+  my_vote: p.myVote, // 👈 rename here
+  upvotes: p.upvotes,
+  downvotes: p.downvotes
+})
+}
+
 </script>

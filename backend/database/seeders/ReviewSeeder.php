@@ -37,6 +37,9 @@ class ReviewSeeder extends Seeder
                                 ->random(rand(2, 8))
                                 ->values()
                                 ->all(),
+                        'upvotes' => rand(0, 100),
+                        'downvotes' => rand(0, 50),
+                        'is_reported' => false,
                         'is_anonymous' => false,
                     ]);
                 }
