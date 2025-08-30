@@ -15,6 +15,11 @@ export const useAuthStore = defineStore('auth', {
     token: null as string | null,
   }),
 
+  getters: {
+    isStudent: (state) => state.user?.role === 'student',
+    isAdmin: (state) => state.user?.role === 'admin',
+  },
+
   actions: {
     loadFromStorage() {
       const storedUser = localStorage.getItem('user')

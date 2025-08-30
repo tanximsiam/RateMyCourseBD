@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useAuthStore } from '../stores/authStore'
+import { useAuthStore } from '@/stores/authStore'
+import ProfileButton from '@/components/ProfileButton.vue'
 
 const emit = defineEmits(['open-login'])
 
@@ -8,17 +9,11 @@ const auth = useAuthStore()
 onMounted(() => auth.loadFromStorage())
 
 const isLoggedIn = computed(() => !!auth.user)
-
-const logout = () => {
-  auth.logout()
-  location.reload() // optional: reload or use router to reset state
-}
 </script>
 
 <template>
   <nav class="bg-white shadow px-6 py-3 flex justify-between items-center">
-    <router-link to="/"
-       class="text-xl font-bold text-blue-600 hover:text-blue-700">
+    <router-link to="/" class="text-xl font-bold text-blue-600 hover:text-blue-700">
       RateMyCourseBD
     </router-link>
 
@@ -31,15 +26,7 @@ const logout = () => {
         Login
       </button>
 
-      <div v-else class="flex items-center gap-3">
-        <img
-          src="https://api.dicebear.com/7.x/thumbs/svg?seed={{ user?.name }}"
-          alt="avatar"
-          class="w-8 h-8 rounded-full border"
-        />
-        <span class="font-medium text-gray-700">{{ auth.user?.name }}</span>
-        <button @click="logout" class="text-sm text-red-500 hover:underline">Logout</button>
-      </div>
+      <ProfileButton v-else />
     </div>
   </nav>
 </template>
