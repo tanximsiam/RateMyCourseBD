@@ -2,8 +2,8 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
-import StudentProfile from '@/components/StudentProfile.vue'
-import AdminProfile from '@/components/AdminProfile.vue'
+import StudentProfile from '../components/StudentProfile.vue'
+import AdminProfile from '../components/AdminProfile.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -18,7 +18,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto mt-10 px-4">
+  <div class="mx-auto mt-10 px-4">
     <StudentProfile v-if="auth.isStudent" />
     <AdminProfile v-else-if="auth.isAdmin" />
     <div v-else class="text-center text-red-500 font-medium">

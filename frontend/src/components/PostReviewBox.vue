@@ -7,6 +7,10 @@ import InputBox from './InputBox.vue'
 import RateModule from './RateModule.vue'
 import TagModule from './TagModule.vue'
 import PrimaryButton from './PrimaryButton.vue'
+import { useAuthStore } from '@/stores/authStore'
+
+const auth = useAuthStore()
+const showLoginToast = ref(false)
 
 const emit = defineEmits(['submitted'])
 
@@ -19,6 +23,11 @@ const tags = ref<string[]>([])
 const isAnonymous = ref(false)
 
 const submitReview = async () => {
+  if (!auth.token) {
+    showLoginToast.value = true
+    setTimeout(() => (showLoginToast.value = false), 2000)
+    return
+  }
   try {
     await api.post('/submit-review', {
       course_id: courseId,
@@ -45,7 +54,7 @@ const submitReview = async () => {
 
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div v-if="!auth.isAdmin" class="flex flex-col gap-6">
     <div class="px-8">
       <h2 class="text-2xl font-bold">Submit Review</h2>
       <p class="text-gray-600 text-sm">
@@ -69,5 +78,11 @@ const submitReview = async () => {
 
       <PrimaryButton @click="submitReview">Submit Review</PrimaryButton>
     </div>
+  </div>
+  <div
+    v-if="showLoginToast"
+    class="fixed bottom-6 right-6 bg-yellow-600 text-white px-4 py-2 rounded shadow-lg z-50"
+  >
+    You need to log in first.
   </div>
 </template>

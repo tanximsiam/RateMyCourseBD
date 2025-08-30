@@ -13,6 +13,7 @@ use App\Http\Controllers\ReviewVoteController;
 use App\Http\Controllers\CourseOutlineController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseSuggestionController;
+use App\Http\Controllers\ModerationController;
 
 
 Route::get('/users', [UserController::class, 'index']); // for API testing
@@ -47,6 +48,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Review
     Route::post('/submit-review', [ReviewController::class, 'store']);
+    Route::get('/me/reviews', [ReviewController::class, 'myReviews']);
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+    Route::post('/reviews/{review}/report', [ReviewController::class, 'report']);
+
+    // Moderation
+    Route::get('/admin/reviews/reported', [ModerationController::class, 'reported']);
+    Route::post('/admin/reviews/{id}/keep', [ModerationController::class, 'keep']);
+
 
     // Review Vote
     Route::post('/vote', [ReviewVoteController::class, 'store']);

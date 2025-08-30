@@ -32,6 +32,12 @@
 
     <p v-if="error" class="text-red-600 mt-2">{{ error }}</p>
   </div>
+  <div
+    v-if="showLoginToast"
+    class="fixed bottom-6 right-6 bg-yellow-600 text-white px-4 py-2 rounded shadow-lg z-50"
+  >
+    You need to log in first.
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -56,6 +62,8 @@ const outlineUrl = computed(() =>
     : ''
 )
 
+const showLoginToast = ref(false)
+
 async function fetchOutline() {
   try {
     const res = await api.get(`/courses/${courseId}/outlines`)
@@ -73,6 +81,12 @@ function handleFileChange(e: Event) {
 }
 
 async function uploadOutline() {
+  if (!auth.token) {
+    showLoginToast.value = true
+    setTimeout(() => (showLoginToast.value = false), 2000)
+    return
+  }
+
   if (!file.value) return
 
   error.value = ''
