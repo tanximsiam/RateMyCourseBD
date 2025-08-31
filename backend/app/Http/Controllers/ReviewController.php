@@ -30,9 +30,23 @@ class ReviewController extends Controller
                 return $review->makeHidden('votes');
             });
 
+        // ✅ Compute average rating
+        $averageRating = $reviews->avg('rating');
+
+        // ✅ Get all tags and count frequencies
+        $tagCounts = collect($reviews)
+            ->pluck('tags') // array of arrays
+            ->flatten()
+            ->filter()
+            ->countBy()
+            ->sortDesc()
+            ->take(5);
+
         return response()->json([
             'course' => $course,
-            'reviews' => $reviews
+            'reviews' => $reviews,
+            'average_rating' => $averageRating,
+            'top_tags' => $tagCounts
         ]);
     }
 
