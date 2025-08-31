@@ -56,6 +56,23 @@ async function deleteOutline(id: number) {
   }
 }
 
+function fileHref(row: Row) {
+  if (!row.file_path) return null
+
+  // absolute URL? use as-is
+  if (/^https?:\/\//i.test(row.file_path)) return row.file_path
+
+  const base = (api.defaults as any)?.baseURL?.replace(/\/api\/?$/, '') ?? ''
+  let path = row.file_path.startsWith('/') ? row.file_path : `/${row.file_path}`
+
+
+  if (path.startsWith('/outlines/')) {
+    path = '/storage' + path
+  }
+
+  return `${base}${path}`
+}
+
 onMounted(fetchList)
 </script>
 
@@ -99,9 +116,22 @@ onMounted(fetchList)
             <tr v-for="row in rows" :key="row.id" class="border-t">
               <td class="p-2 border">{{ row.university ?? '-' }}</td>
               <td class="p-2 border">
-                <router-link :to="`/courses/${row.course_id}`" class="text-blue-600 underline">
-                  {{ row.course ?? `Course #${row.course_id}` }}
-                </router-link>
+                <template v-if="fileHref(row)">
+                  <a
+                    :href="fileHref(row)!"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-blue-600 underline"
+                    title="Open outline file"
+                  >
+                    {{ row.course ?? `Course #${row.course_id}` }}
+                  </a>
+                </template>
+                <template v-else>
+                  <router-link :to="`/courses/${row.course_id}`" class="text-blue-600 underline">
+                    {{ row.course ?? `Course #${row.course_id}` }}
+                  </router-link>
+                </template>
               </td>
               <td class="p-2 border capitalize">{{ row.status }}</td>
               <td class="p-2 border space-x-2">
