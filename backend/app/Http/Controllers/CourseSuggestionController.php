@@ -12,6 +12,7 @@ class CourseSuggestionController extends Controller
     public function index()
     {
         return CourseSuggestion::with(['university', 'department', 'user'])
+            ->where('approved', false)
             ->orderBy('created_at', 'desc')
             ->get();
     }

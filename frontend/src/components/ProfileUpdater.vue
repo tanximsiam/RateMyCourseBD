@@ -108,7 +108,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-white shadow rounded-2xl p-6 space-y-5 w-full">
+  <div class="bg-white shadow rounded-2xl p-6 space-y-5 w-full min-w-lg">
     <h2 class="text-xl font-bold text-gray-800">Profile</h2>
 
     <div v-if="loadingProfile" class="text-gray-500">Loading profile…</div>

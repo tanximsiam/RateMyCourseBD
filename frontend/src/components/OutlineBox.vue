@@ -2,15 +2,28 @@
   <div class="p-4 bg-white rounded-2xl shadow">
     <h2 class="text-lg font-semibold mb-2">Course Outline</h2>
 
-    <div v-if="outline">
+    <div v-if="status === 'approved'">
       <a
-        :href="outlineUrl"
+        :href="fileUrl"
         target="_blank"
         rel="noopener"
         class="text-blue-600 underline"
       >
         View Outline (PDF)
       </a>
+      <button
+        type="button"
+        @click="reportOld"
+        :disabled="isReporting"
+        class="ml-3 px-3 py-1 bg-red-600 text-white rounded"
+      >
+        {{ isReporting ? 'Reporting...' : 'Report old' }}
+      </button>
+    </div>
+
+
+    <div v-else-if="status === 'pending'" class="text-yellow-700 font-medium">
+      Uploaded and waiting for approval.
     </div>
 
     <div v-else>
@@ -38,38 +51,39 @@
   >
     You need to log in first.
   </div>
+
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/authStore'
 import { AxiosError } from 'axios'
+const auth = useAuthStore()
 
 const route = useRoute()
 const courseId = Number(route.params.id)
 
-const outline = ref(null as null | { file_path: string })
 const file = ref<File | null>(null)
 const isUploading = ref(false)
 const error = ref('')
-const auth = useAuthStore()
-
-const outlineUrl = computed(() =>
-  outline.value
-    ? `${import.meta.env.VITE_API_BASE_URL}/storage/${outline.value.file_path}`
-    : ''
-)
+const isReporting = ref(false)
 
 const showLoginToast = ref(false)
 
-async function fetchOutline() {
+const status = ref<'not_uploaded' | 'pending' | 'approved'>('not_uploaded')
+const fileUrl = ref('')
+
+async function fetchOutlineStatus() {
   try {
-    const res = await api.get(`/courses/${courseId}/outlines`)
-    outline.value = res.data[0] || null
+    const res = await api.get(`/courses/${courseId}/outline-status`)
+    status.value = res.data.status
+    if (res.data.status === 'approved') {
+      fileUrl.value = res.data.file_url
+    }
   } catch (err) {
-    console.error('Failed to load outline', err)
+    console.error('Failed to load outline status', err)
   }
 }
 
@@ -96,13 +110,8 @@ async function uploadOutline() {
   formData.append('file', file.value)
 
   try {
-    await api.post(`/courses/${courseId}/outline`, formData, {
-      headers: {
-        Authorization: `Bearer ${auth.token}`,
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    await fetchOutline()
+    await api.post(`/courses/${courseId}/outline`, formData)
+    await fetchOutlineStatus()
     file.value = null
   } catch (err) {
     const axiosErr = err as AxiosError<{ message?: string }>
@@ -112,5 +121,25 @@ async function uploadOutline() {
   }
 }
 
-onMounted(fetchOutline)
+
+async function reportOld() {
+  if (!auth.token) {
+    showLoginToast.value = true
+    setTimeout(() => (showLoginToast.value = false), 2000)
+    return
+  }
+
+  isReporting.value = true
+  try {
+    await api.post(`/courses/${courseId}/outline/report-old`)
+    await fetchOutlineStatus()
+  } catch (err) {
+    console.error('Failed to report old outline', err)
+  } finally {
+    isReporting.value = false
+  }
+}
+
+
+onMounted(fetchOutlineStatus)
 </script>

@@ -78,7 +78,7 @@ onMounted(() => {
   <div>
     <div class="space-y-6 w-full">
       <div class="flex items-center w-full justify-between">
-        <h2 class="text-2xl font-bold text-gray-800">
+        <h2 class="text-2xl font-bold text-gray-800 text-nowrap mr-10">
           Reported Reviews
           <span v-if="!loading && !error" class="ml-2 text-sm text-gray-500">({{ filteredReviews.length }})</span>
         </h2>

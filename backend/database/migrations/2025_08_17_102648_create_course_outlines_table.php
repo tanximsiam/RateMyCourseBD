@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('file_path');
             $table->boolean('approved')->default(false); // moderation flag
+            $table->boolean('obsolete')->default(false); // if the outline is outdated
             $table->timestamps();
 
             $table->unique(['course_id', 'user_id']);

@@ -55,6 +55,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Moderation
     Route::get('/admin/reviews/reported', [ModerationController::class, 'reported']);
     Route::post('/admin/reviews/{id}/keep', [ModerationController::class, 'keep']);
+    Route::get('/admin/course-outlines/review', [ModerationController::class, 'adminReviewList']);
+    Route::patch('/admin/course-outlines/{id}/keep', [ModerationController::class, 'adminKeep']);
+    Route::delete('/admin/course-outlines/{id}', [ModerationController::class, 'adminDestroy']);
 
 
     // Review Vote
@@ -62,10 +65,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Course Outline
     Route::post('/courses/{id}/outline', [CourseOutlineController::class, 'store']);
+    Route::post('/courses/{id}/outline/report-old', [CourseOutlineController::class, 'reportOld']);
 
     // Comments
     Route::post('/reviews/{review}/comments', [CommentController::class, 'store']);
 
     // Suggestions
     Route::post('/suggestions', [CourseSuggestionController::class, 'store']);
+    Route::get('/course-suggestions', [CourseSuggestionController::class, 'index']);
+    Route::post('/course-suggestions/{id}/approve', [CourseSuggestionController::class, 'approve']);
+    Route::delete('/course-suggestions/{id}', [CourseSuggestionController::class, 'destroy']);
 });
+
+Route::get('/courses/{id}/outline-status', [CourseOutlineController::class, 'showStatus']);

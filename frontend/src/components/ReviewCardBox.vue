@@ -40,6 +40,11 @@ type ReviewUser = {
   name: string
 }
 
+type ReviewsResponse = {
+  course: Course
+  reviews: Review[]
+}
+
 type Review = {
   id: number
   rating: number
@@ -51,6 +56,7 @@ type Review = {
   upvotes: number
   downvotes: number
   my_vote: 1 | -1 | null
+  is_reported: boolean
 }
 
 type Department = {
@@ -86,10 +92,18 @@ type AxiosErrorResponse = {
 
 const fetchReviews = async () => {
   loading.value = true
+  error.value = null
   try {
-    const { data } = await api.get(`/courses/${courseId}/reviews/details`)
+    const { data } = await api.get<ReviewsResponse>(`/courses/${courseId}/reviews/details`)
+
+    // set course header data
     course.value = data.course
-    reviews.value = data.reviews
+
+    // normalize reviews
+    reviews.value = (data.reviews || []).map((r) => ({
+      ...r,
+      is_reported: r.is_reported ?? false,
+    }))
   } catch (err: unknown) {
     if (
       typeof err === 'object' &&

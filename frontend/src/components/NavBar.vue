@@ -9,6 +9,7 @@ const auth = useAuthStore()
 onMounted(() => auth.loadFromStorage())
 
 const isLoggedIn = computed(() => !!auth.user)
+const isAdmin = computed(() => auth.user?.role === 'admin')
 </script>
 
 <template>
@@ -18,6 +19,24 @@ const isLoggedIn = computed(() => !!auth.user)
     </router-link>
 
     <div class="flex items-center gap-4">
+      <!-- Admin buttons -->
+      <router-link
+        v-if="isAdmin"
+        to="/suggested-courses"
+        class="px-4 py-2 text-gray-800 rounded hover:bg-gray-200"
+      >
+        Suggested Courses
+      </router-link>
+
+      <router-link
+        v-if="isAdmin"
+        to="/course-outlines"
+        class="px-4 py-2 text-gray-800 rounded hover:bg-gray-200"
+      >
+        Course Outlines
+      </router-link>
+
+      <!-- Login / Profile -->
       <button
         v-if="!isLoggedIn"
         @click="emit('open-login')"
