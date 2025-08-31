@@ -15,6 +15,7 @@ class CourseOutline extends Model
         'user_id',
         'file_path',
         'approved',
+        'obsolete',
     ];
 
     public function course()

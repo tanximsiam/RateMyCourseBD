@@ -48,6 +48,25 @@ class ReviewController extends Controller
         return response()->json($reviews);
     }
 
+    public function myReviews(Request $request)
+    {
+        $user = $request->user();
+
+        $reviews = Review::with(['course', 'user', 'votes']) // 👈 add 'user' here
+            ->where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($review) use ($user) {
+                $review->my_vote = optional(
+                    $review->votes->firstWhere('user_id', $user->id)
+                )?->vote;
+
+                return $review->makeHidden('votes');
+            });
+
+        return response()->json($reviews);
+    }
+
 
     public function store(Request $request)
     {
@@ -87,6 +106,22 @@ class ReviewController extends Controller
 
         return response()->json(['message' => 'Review submitted', 'review' => $review], 201);
     }
+
+    public function destroy(Request $request, $id)
+    {
+        $user = $request->user();
+        $review = Review::findOrFail($id);
+
+        if ($review->user_id !== $user->id && $user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $review->delete();
+
+        return response()->json(['message' => 'Review deleted successfully']);
+    }
+
+
     public function getVotes(Review $review)
     {
         return response()->json([
