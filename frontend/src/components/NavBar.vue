@@ -20,6 +20,14 @@ const isAdmin = computed(() => auth.user?.role === 'admin')
 
     <div class="flex items-center gap-4">
       <!-- Admin buttons -->
+       <router-link
+        v-if="isAdmin"
+        to="/reported-reviews"
+        class="px-4 py-2 text-gray-800 rounded hover:bg-gray-200"
+      >
+        Reported Reviews
+      </router-link>
+
       <router-link
         v-if="isAdmin"
         to="/suggested-courses"

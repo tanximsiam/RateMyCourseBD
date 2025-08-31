@@ -4,11 +4,27 @@
     <div v-else-if="error" class="text-red-500">{{ error }}</div>
     <div v-else class="flex flex-col gap-6">
       <!-- Course Info Header -->
-      <div class="px-8">
+      <div class="px-8 space-y-1">
         <h2 class="text-2xl font-bold">{{ course?.title }}</h2>
         <p class="text-gray-600 text-sm">
           {{ course?.code }} · {{ course?.department?.name }} · {{ course?.university?.name }}
         </p>
+
+        <div class="text-sm text-gray-700 mt-1">
+          <div v-if="averageRating !== null">
+            <strong>Average Rating:</strong> {{ averageRating.toFixed(1) }} ★
+          </div>
+          <div v-if="topTags.length">
+            <strong class="mr-2">Top Tags:</strong>
+            <span
+              v-for="[tag, count] in topTags"
+              :key="tag"
+              class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full mr-2 mt-1"
+            >
+              {{ tag }} ({{ count }})
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- Review Cards -->
@@ -34,6 +50,8 @@ const props = defineProps<{ reload: number }>() // ✅ Watch trigger from parent
 
 const route = useRoute()
 const courseId = Number(route.params.id)
+const averageRating = ref<number | null>(null)
+const topTags = ref<[string, number][]>([])
 
 type ReviewUser = {
   id: number
@@ -43,6 +61,8 @@ type ReviewUser = {
 type ReviewsResponse = {
   course: Course
   reviews: Review[]
+  average_rating: number
+  top_tags: Record<string, number>
 }
 
 type Review = {
@@ -96,14 +116,13 @@ const fetchReviews = async () => {
   try {
     const { data } = await api.get<ReviewsResponse>(`/courses/${courseId}/reviews/details`)
 
-    // set course header data
     course.value = data.course
-
-    // normalize reviews
     reviews.value = (data.reviews || []).map((r) => ({
       ...r,
       is_reported: r.is_reported ?? false,
     }))
+    averageRating.value = data.average_rating ?? null
+    topTags.value = Object.entries(data.top_tags || {})
   } catch (err: unknown) {
     if (
       typeof err === 'object' &&

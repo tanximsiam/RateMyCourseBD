@@ -5,6 +5,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import SuggestedCourse from '@/views/SuggestedCourse.vue'
 import { useAuthStore } from '@/stores/authStore'
 import CourseOutlines from '@/views/CourseOutlines.vue'
+import ReportedReviews from '@/views/ReportedReviews.vue'
 
 
 const router = createRouter({
@@ -45,6 +46,13 @@ const router = createRouter({
       component: CourseOutlines,
       meta: { requiresAuth: true, requiresAdmin: true }
     },
+    {
+      path: '/reported-reviews',
+      name: 'ReportedReviews',
+      component: ReportedReviews,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+
   ],
 })
 
